@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package rtabmap;
+
+message LaserScanProto {
+  int32 format = 1;
+  int32 max_points = 2;
+  float range_min = 3;
+  float range_max = 4;
+  float angle_min = 5;
+  float angle_max = 6;
+  float angle_increment = 7;
+  
+  // For the cv::Mat data
+  int32 rows = 8;
+  int32 cols = 9;
+  int32 type = 10;
+  bytes mat_data = 11;
+}

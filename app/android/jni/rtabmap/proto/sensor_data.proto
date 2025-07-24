@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package rtabmap.proto;
+
+message Transform {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  float qx = 4;
+  float qy = 5;
+  float qz = 6;
+  float qw = 7;
+}
+
+message CameraModel {
+  bytes intrinsics = 1;  // serialized cv::Mat
+  Transform extrinsics = 2;
+  int32 width = 3;
+  int32 height = 4;
+}
+
+message StereoCameraModel {
+  CameraModel left = 1;
+  CameraModel right = 2;
+  Transform baseline = 3;
+}
+
+message LaserScan {
+  bytes data = 1;        // serialized scan data
+  int32 format = 2;
+  Transform localTransform = 3;
+  float maxRange = 4;
+  float minRange = 5;
+  float angleMin = 6;
+  float angleMax = 7;
+  float angleIncrement = 8;
+}
+
+message IMU {
+  double stamp = 1;
+  Transform localTransform = 2;
+  float linearAcceleration_x = 3;
+  float linearAcceleration_y = 4;
+  float linearAcceleration_z = 5;
+  float angularVelocity_x = 6;
+  float angularVelocity_y = 7;
+  float angularVelocity_z = 8;
+  float orientation_x = 9;
+  float orientation_y = 10;
+  float orientation_z = 11;
+  float orientation_w = 12;
+}
+
+message GPS {
+  double stamp = 1;
+  double longitude = 2;
+  double latitude = 3;
+  double altitude = 4;
+  double error = 5;
+  double bearing = 6;
+}
+
+message SensorData {
+  int32 id = 1;
+  double stamp = 2;
+  
+  bytes imageRaw = 3;          // serialized cv::Mat
+  bytes depthOrRightRaw = 4;   // serialized cv::Mat
+  LaserScan laserScan = 5;
+  
+  repeated CameraModel cameraModels = 6;
+  repeated StereoCameraModel stereoCameraModels = 7;
+  
+  bytes userData = 8;          // serialized cv::Mat
+  
+  bytes groundCells = 9;       // serialized cv::Mat
+  bytes obstacleCells = 10;    // serialized cv::Mat
+  bytes emptyCells = 11;       // serialized cv::Mat
+  float cellSize = 12;
+  Transform viewPoint = 13;
+  
+  repeated KeyPoint keypoints = 14;
+  repeated Point3f keypoints3D = 15;
+  bytes descriptors = 16;      // serialized cv::Mat
+  
+  Transform groundTruth = 17;
+  Transform globalPose = 18;
+  bytes globalPoseCovariance = 19;  // serialized 6x6 cv::Mat
+  
+  GPS gps = 20;
+  IMU imu = 21;
+}
+
+message KeyPoint {
+  float x = 1;
+  float y = 2;
+  float size = 3;
+  float angle = 4;
+  float response = 5;
+  int32 octave = 6;
+  int32 class_id = 7;
+}
+
+message Point3f {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+} 

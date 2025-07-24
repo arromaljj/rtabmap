@@ -150,12 +150,11 @@ bool exportMeshNative(
             int optimizedMinClusterSize,
             float optimizedMaxTextureDistance,
             int optimizedMinTextureClusterSize,
-            int textureVertexColorPolicy,
             bool blockRendering)
 {
     if(object)
     {
-        return native(object)->exportMesh(cloudVoxelSize, regenerateCloud, meshing, textureSize, textureCount, normalK, optimized, optimizedVoxelSize, optimizedDepth, optimizedMaxPolygons, optimizedColorRadius, optimizedCleanWhitePolygons, optimizedMinClusterSize, optimizedMaxTextureDistance, optimizedMinTextureClusterSize, textureVertexColorPolicy, blockRendering);
+        return native(object)->exportMesh(cloudVoxelSize, regenerateCloud, meshing, textureSize, textureCount, normalK, optimized, optimizedVoxelSize, optimizedDepth, optimizedMaxPolygons, optimizedColorRadius, optimizedCleanWhitePolygons, optimizedMinClusterSize, optimizedMaxTextureDistance, optimizedMinTextureClusterSize, blockRendering);
     }
     else
     {
@@ -315,7 +314,7 @@ void postOdometryEventNative(const void *object,
     else
     {
         UERROR("object is null!");
-        return;
+        
     }
 }
 
@@ -435,13 +434,6 @@ void setWireframeNative(const void *object, bool enabled)
     else
         UERROR("object is null!");
 }
-void setTextureColorSeamsHiddenNative(const void *object, bool hidden)
-{
-    if(object)
-        native(object)->setTextureColorSeamsHidden(hidden);
-    else
-        UERROR("object is null!");
-}
 void setLocalizationModeNative(const void *object, bool enabled)
 {
     if(object)
@@ -502,13 +494,6 @@ void setSmoothingNative(const void *object, bool enabled)
 {
     if(object)
         native(object)->setSmoothing(enabled);
-    else
-        UERROR("object is null!");
-}
-void setDepthBleedingErrorNative(const void *object, float value)
-{
-    if(object)
-        native(object)->setDepthBleedingError(value);
     else
         UERROR("object is null!");
 }
@@ -634,56 +619,6 @@ void addEnvSensorNative(const void *object, int type, float value)
 {
     if(object)
         return native(object)->addEnvSensor(type, value);
-    else
-        UERROR("object is null!");
-}
-
-void removeMeasureNative(const void *object)
-{
-    if(object)
-        return native(object)->removeMeasure();
-    else
-        UERROR("object is null!");
-}
-void addMeasureNative(const void *object)
-{
-    if(object)
-        return native(object)->addMeasureButtonClicked();
-    else
-        UERROR("object is null!");
-}
-void teleportNative(const void *object)
-{
-    if(object)
-        return native(object)->teleportButtonClicked();
-    else
-        UERROR("object is null!");
-}
-void setMeasuringModeNative(const void *object, int mode)
-{
-    if(object)
-        return native(object)->setMeasuringMode(mode);
-    else
-        UERROR("object is null!");
-}
-void setMetricSystemNative(const void *object, bool enabled)
-{
-    if(object)
-        return native(object)->setMetricSystem(enabled);
-    else
-        UERROR("object is null!");
-}
-void setMeasuringTextSizeNative(const void *object, float size)
-{
-    if(object)
-        return native(object)->setMeasuringTextSize(size);
-    else
-        UERROR("object is null!");
-}
-void clearMeasuresNative(const void *object)
-{
-    if(object)
-        return native(object)->clearMeasures();
     else
         UERROR("object is null!");
 }

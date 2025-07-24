@@ -30,6 +30,17 @@
 	<string>The camera is used for scanning (ideally with LiDAR).</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>The GPS is used when GPS option is enabled in Settings-&gt;Mapping...</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Required to connect to a local computer for data streaming.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_myapp._tcp</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

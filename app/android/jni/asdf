@@ -1,0 +1,137 @@
+#include "DataPublisher.h"
+#include <iostream>
+#include <sstream>
+#include <thread>
+#include <chrono>
+
+DataPublisher::DataPublisher(const std::string& url)
+    : url_(url) {
+    setupWebSocket();
+}
+
+DataPublisher::~DataPublisher() {
+    stop();
+}
+
+void DataPublisher::setupWebSocket() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    websocket_ = std::make_unique<ix::WebSocket>();
+    websocket_->setUrl(url_);
+
+    websocket_->setOnMessageCallback([this](const ix::WebSocketMessagePtr& msg) {
+        switch (msg->type) {
+            case ix::WebSocketMessageType::Open:
+                std::cout << "Connected to WebSocket server" << std::endl;
+                break;
+            case ix::WebSocketMessageType::Close:
+                std::cout << "Disconnected from WebSocket server" << std::endl;
+                break;
+            case ix::WebSocketMessageType::Error:
+                std::cout << "WebSocket error: " << msg->errorInfo.reason << std::endl;
+                break;
+            default:
+                break;
+        }
+    });
+}
+
+void DataPublisher::start() {
+    if (running_) return;
+    
+    running_ = true;
+    
+    // Start the websocket
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (websocket_) {
+            websocket_->start();
+        }
+    }
+    
+    // Start reconnection thread
+    reconnectThread_ = std::thread(&DataPublisher::reconnectionLoop, this);
+}
+
+void DataPublisher::stop() {
+    running_ = false;
+    
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (websocket_) {
+            websocket_->stop();
+        }
+    }
+    
+    if (reconnectThread_.joinable()) {
+        reconnectThread_.join();
+    }
+}
+
+void DataPublisher::reconnectionLoop() {
+    while (running_) {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (websocket_ && websocket_->getReadyState() != ix::ReadyState::Open) {
+                std::cout << "Attempting to reconnect..." << std::endl;
+                websocket_->start();
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
+}
+
+void DataPublisher::publishPose(const rtabmap::Transform& pose) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!websocket_ || websocket_->getReadyState() != ix::ReadyState::Open) {
+        return;
+    }
+
+    try {
+        std::stringstream ss;
+        ss << "{\"type\":\"pose\",\"data\":{";
+        ss << "\"x\":" << pose.x() << ",";
+        ss << "\"y\":" << pose.y() << ",";
+        ss << "\"z\":" << pose.z() << ",";
+
+        Eigen::Quaternionf rotation = pose.getQuaternionf();
+        ss << "\"qx\":" << rotation.x() << ",";
+        ss << "\"qy\":" << rotation.y() << ",";
+        ss << "\"qz\":" << rotation.z() << ",";
+        ss << "\"qw\":" << rotation.w();
+        ss << "}}";
+
+        websocket_->send(ss.str());
+    } catch (const std::exception& e) {
+        std::cerr << "Error publishing pose: " << e.what() << std::endl;
+    }
+}
+
+void DataPublisher::publishPointCloud(const rtabmap::LaserScan &laserScan) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!websocket_ || websocket_->getReadyState() != ix::ReadyState::Open) {
+        return;
+    }
+
+    // Check if the laser scan is empty
+    if (laserScan.empty()) {
+        std::cerr << "Laser scan data is empty!" << std::endl;
+        return;
+    }
+
+    try {
+     
+
+        std::vector<uint8_t> data = serializeLaserScan(laserScan);
+        
+        // Use the PCLUtil function to serialize the point cloud
+        // SerializedPointCloud2 serialized = convertLaserScanToSerializedPointCloud2(
+        //     laserScan,
+        //     "frame_id_example", 
+        //     std::chrono::system_clock::now().time_since_epoch().count());
+
+        // Send the serialized data over the WebSocket
+        websocket_->sendBinary(data);
+    } catch (const std::exception& e) {
+        std::cerr << "Error publishing point cloud: " << e.what() << std::endl;
+    }
+}

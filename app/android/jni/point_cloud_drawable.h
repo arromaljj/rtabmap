@@ -98,8 +98,7 @@ private:
 		  float nearClipPlane = 0, // nonnull if depthTexture>0
 		  float farClipPlane = 0,  // nonnull if depthTexture>0
 		  bool packDepthToColorChannel = false,
-		  bool wireFrame = false,
-          bool hideSeams = false) const;
+		  bool wireFrame = false) const;
 
  private:
   template<class PointT>

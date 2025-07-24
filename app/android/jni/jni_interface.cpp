@@ -512,19 +512,6 @@ Java_com_introlab_rtabmap_RTABMapLib_setSmoothing(
 	}
 }
 JNIEXPORT void JNICALL
-Java_com_introlab_rtabmap_RTABMapLib_setDepthBleedingError(
-		JNIEnv*, jclass, jlong native_application, float value)
-{
-	if(native_application)
-	{
-		return native(native_application)->setDepthBleedingError(value);
-	}
-	else
-	{
-		UERROR("native_application is null!");
-	}
-}
-JNIEXPORT void JNICALL
 Java_com_introlab_rtabmap_RTABMapLib_setDepthFromMotion(
 		JNIEnv*, jclass, jlong native_application, bool enabled)
 {
@@ -834,7 +821,6 @@ Java_com_introlab_rtabmap_RTABMapLib_exportMesh(
 					optimizedMinClusterSize,
 					optimizedMaxTextureDistance,
 					optimizedMinTextureClusterSize,
-					0,
 					blockRendering);
 	}
 	else

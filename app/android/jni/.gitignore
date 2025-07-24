@@ -1,1 +1,5 @@
 CameraAvailability.h
+build/
+build/bak
+libs/
+_OldCMakeLists/*

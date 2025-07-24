@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package rtabmap;
+
+message PoseProto {
+  // Position
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  
+  // Quaternion rotation
+  float qx = 4;  // quaternion x
+  float qy = 5;  // quaternion y
+  float qz = 6;  // quaternion z
+  float qw = 7;  // quaternion w
+}
